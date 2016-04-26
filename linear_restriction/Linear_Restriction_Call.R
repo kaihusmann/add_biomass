@@ -1,6 +1,6 @@
 rm(list = ls())
 
-# GITHUB
+# Hallo 
 
 ## Pakete laden und Daten vorbereiten ##
 library(ggplot2)
