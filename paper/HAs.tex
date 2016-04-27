@@ -1,0 +1,255 @@
+\documentclass{Vorlage}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{bm}
+\usepackage[utf8]{inputenc}
+%\bibliographystyle{apalike}
+
+
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}
+\renewcommand*\sectionmark[1]{\markboth{\MakeUppercase{#1}}{}}
+
+\newtheorem{proof}{Proof}
+\newcommand{\XX}{\mathbf{X}}
+\newcommand{\YY}{\mathbf{Y}}
+\newcommand{\bb}{\pmb{\beta}}
+\newcommand{\la}{\pmb{\lambda}}
+\newcommand{\A}{\mathbf{A}}
+\newcommand{\cc}{\mathbf{c}}
+
+\begin{document}
+
+\newgeometry{top=2.5cm,bottom=2.0cm,left=2.5cm,right=2.5cm} % Befehl wird nur benötigt, falls Änderungen an den Seitenrändern in der Datei "Vorlage.cls" vorgenommen werden.
+
+\begin{titlepage}
+
+
+\vspace*{3cm}
+
+
+
+
+\titel{Comparison of Regression Methods for additive and heteroskedastic Biomass Functions}{Working Paper}
+
+
+\vspace{1cm}
+
+\begin{tabular}{p{5cm}|p{0.1cm} p{10cm}l}
+\textsc{Last processed by:} & & \textsc{Alex}\\
+\textsc{Last processing date:} & & \textsc{\today}\\
+\end{tabular}
+\end{titlepage}
+
+\restoregeometry
+
+\pagenumbering{Roman} % \pagenumbering{roman} = Kleinschreibung: II -> ii.
+
+\pagestyle{plain}
+
+\tableofcontents % Inhaltsverzeichnis.
+
+\newpage % Neue Seite.
+
+\listoffigures % Abbildungsverzeichnis.
+
+\listoftables % Tabellenverzeichnis.
+
+\newpage
+
+\pagenumbering{arabic} % Ab hier folgt die arabische Seitennummerierung.
+
+%\renewcommand{\thesection}{\arabic{section}} % Römische Nummerierung der Kapitelüberschriften.
+
+%============================================ Instroduction ========================================================%
+\pagestyle{fancy}
+
+\section{Introduction}
+
+
+\newpage
+
+%=================================== Material and Methods ====================================================%
+\section{Estimation with linear restriction}
+
+\subsection{Data}
+
+Data description.
+
+\subsection{Separate linear regression}
+
+\subsection{Restricted linear regression}
+The Biomass of the tree components 'stem wood' (under bark), 'stem bark', branches (over bark) and twigs (over bark) can be calculated via diameter at breast height ($DBH$) and tree height($H$) as
+
+$$
+Biomass_i = e^{\alpha_i}DBH^{\beta_i}H^{\gamma_k}.
+$$
+
+Hence, the biomass of the total tree calculates as
+
+$$
+Biomass = \sum^{p/4}_{i=1}e^{\alpha_i}DBH^{\beta_i}H^{\gamma_k}, \\
+$$
+
+
+
+where $p$ is equal to the total number of parameters. By taking the logarithm of the dependent and the independent variables for every component $i$, the functions transforms into simple linear models of the form
+
+$$
+\underbrace{\ln Biomass_i}_{b} = \alpha_i + \beta_i \underbrace{\ln DBH_i}_{dbh} + \gamma \underbrace{\ln H_k}_{h}. 
+$$
+
+
+Addition of all $i$ (here $i$ is 4) components in a tree has to sum up to the total biomass of the respective tree. 
+This is not necessarily given if all 4 component functions are regressed separately \cite[p. 
+6]{parresol_2001}. Thus, it is useful to restrict the linear regression model such that the sum of the components equals the observed total biomass. Therefore, the statistical model to estimate the biomass for each section looks like this
+
+\begin{align*}
+b_{ij} &= \alpha_i + \beta_i dbh + \gamma_k h + \varepsilon_{ij} \\
+\mathbf{b} &= (\mathbf{I}_i \otimes \mathbf{1}_j, \mathbf{I}_i \otimes \mathbf{dbh}, \mathbf{I}_k \otimes \mathbf{h}) \times (\alpha_i \quad \beta_i \quad \gamma_k)' + \pmb{\varepsilon},  
+\end{align*}
+
+where
+
+$$
+i = 1,...,p/4, \: k = 1,2 \: j = 1,...,n,
+$$
+
+where $j$ is the number of observations. The idea behind the estimation with linear restriction is that we estimate the biomass of the components subject to the constraint that each DBH and height combination must estimate not only the respective component but also the total tree biomass properly. The specific method of a restricted linear models, we use in this paper, is based on the method of Lagrange multipliers \cite[p. 60]{LR}. In a first stage we run a usual OLS estimation with the specified design matrix by
+
+$$
+\hat{\pmb{\beta}} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{Y}.
+$$
+
+In the second stage we use the unrestricted estimates to obtain the restricted parameter estimates based on the first stage estimation by 
+
+$$
+\hat{\pmb{\beta}}_R = \hat{\pmb{\beta}} - (\mathbf{X}'\mathbf{X})^{-1}\mathbf{A}'[\mathbf{A}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{A}']^{-1}(\mathbf{A}\hat{\pmb{\beta}} - \mathbf{c}),
+$$   
+
+where
+
+$$
+\mathbf{c} = \text{restriction}, \quad \mathbf{A}_{q \times p}\pmb{\beta} = \mathbf{c}, \quad r(\mathbf{A}) = q.
+$$
+
+We chose $q$ to be 3. This means that the restriction must only be hold for 3 randomly selected DBH-H-combinations. It is not possible to restrict every combination a priori, because there would be no degrees of freedom left. As the linear regression with 2 independent variables can be geometrically interpreted as a plain, 3 fixed points are sufficient for the restriction, as it can be seen in figure \ref{Re}. Hence, the rank of $\mathbf{A}$ is 3.
+Moreover, it is possible to calculate the covariance matrix by
+
+$$
+\widehat{\Sigma} = \hat{\sigma}^2\{(\mathbf{X}'\mathbf{X})^{-1} - (\mathbf{X}'\mathbf{X})^{-1}\mathbf{A}'[\mathbf{A}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{A}']^{-1}\mathbf{A}(\mathbf{X}'\mathbf{X})^{-1}\}.
+$$
+
+\begin{figure}
+\center
+\includegraphics[scale=0.55]{Bilder/Restriction.pdf}
+\caption{Restriction}
+\label{Re}
+\end{figure}
+
+The sum of the log linearised tree components leads to a product in the back transformed original scale. To generate a variable that is suitable for the restriction matrix $\mathbf{A}$ of the log linear model, the product of the components on original scale must be calculated.
+However, the position of the plain changes by selecting a different combination of the 3 data points. To overcome the problem of an arbitrary restriction, which does not hold in a general case, we iterate the procedure of linear restricted regression with a randomly chosen $\mathbf{A}$ matrix  100,000 times. Due to the fact, that the position and slope of the plain is very sensitive in case of outliers, we exclude all non reasonable estimates a priori. This means we accept only estimates with positive slope parameters, because it is not reasonable to assume a negative relationship of biomass and the size of a tree. Afterwards it is possible to calculate the median of the estimated parameters, which we use in further analysis.
+
+\subsection{Separate nonlinear regression}
+
+
+
+\subsection{Nonlinear seemingly unrelated regression}
+
+\subsection{Model comparison}
+
+\begin{table}[!htbp] \centering 
+  \caption{Estimated model parameters} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}} lccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ Components & Parameter       & OLS          & Restricted LS & NSUR & GNLS \\ 
+\hline \\[-1.8ex] 
+Stem wood  & $\hat{\alpha}_1$ & $$-$14.147$ & $$-$14.2063$ & $$-$13.949$ & $$-$14.228$ \\ 
+           &                  &             & $(3.3157)$  &             & \\
+Stem wood  & $\hat{\beta}_1$  & $2.189$     & $2.2979$ & $2.210$ & $2.182$ \\ 
+           &                  &             & $(0.2677)$   &             & \\
+Stem wood  & $\hat{\gamma}_1$ & $1.006$     & $0.952$ & $0.967$ & $1.022$ \\ 
+           &                  &             & $(0.5754)$   &             & \\
+Stem bark  & $\hat{\alpha}_2$ & $$-$14.679$ & $$-$14.7379$ & $$-$14.845$ & $$-$14.768$ \\ 
+           &                  &             & $(3.3157)$  &             & \\
+Stem bark  & $\hat{\beta}_2$  & $1.953$     & $2.062$ & $1.941$ & $1.951$ \\ 
+           &                  &             & $(0.2677)$   &             & \\
+Stem bark  & $\hat{\gamma}_2$ & $0.919$     & $0.865$ & $0.951$ & $0.933$ \\ 
+           &                  &             & $(0.5754)$   &             & \\
+Branches   & $\hat{\alpha}_3$ & $$-$4.848$  & $$-$5.3127$ & $$-$4.444$ & $$-$4.839$ \\ 
+           &                  &             & $(0.816)$    &             & \\
+Branches   & $\hat{\beta}_3$  & $1.560$     & $1.6649$ & $1.507$ & $1.571$ \\ 
+           &                  &             & $(0.1453)$    &             & \\
+Twigs      & $\hat{\alpha}_4$ & $$-$6.919$  & $$-$7.3838$ & $$-$6.678$ & $$-$7.327$ \\ 
+           &                  &             & $(0.816)$    &             & \\
+Twigs     & $\hat{\beta}_4$  & $1.541$     & $1.6450$ & $1.589$ & $1.696$ \\ 
+           &                  &             & $(0.1453)$    &             & \\
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table}
+
+
+
+\section{Results}
+
+\subsection{Separate linear regression}
+
+\subsection{Restricted linear regression}
+
+\subsection{Separate nonlinear regression}
+
+\subsection{Nonlinear seemingly unrelated regression}
+
+\subsection{Model comparison}
+
+
+%\clearpage
+%============================================== Conlcusion =========================================================%
+
+\section{Conclusion}
+
+
+
+\clearpage
+
+
+%============================================ References ===========================================================%
+\addcontentsline{toc}{section}{\numberline{}References}
+\bibliographystyle{apalike}
+\bibliography{Literatur}
+
+%\section{References}
+%\renewcommand{\section}[2]{}
+%\addcontentsline{toc}{section}{References}
+%\renewcommand{\bibname}{4 References}
+%\phantomsection
+%\addcontentsline{toc}{section}{References}
+
+
+
+
+\clearpage
+
+%============================================== Appendix ============================================================%
+\appendix
+%\pagestyle{Myheadings}
+\chead{APPENDIX}
+%\pagestyle{}
+%\section{$A^{-1}$ Appendix}
+%\setcounter{secnumdepth}{0}
+%\begin{appendix}
+\section*{Appendix}
+\addcontentsline{toc}{section}{\numberline{}Appendix}
+
+\begin{proof}
+Let $\YY = \XX \bb + \pmb{\varepsilon}$, where $\XX$ is an $n \times p$ matrix of full rank $p$ and let $\la$ denote a $q$ vector of Lagrange Multipliers. Suppose we want to find the minimum of $\pmb{\varepsilon}'\pmb{\varepsilon}$ subject to the linear restriction $\A\bb = \cc$, where $\A$ is a known $q \times p$ matrix of rank q and $\cc$ is a $q \times 1$ vector.
+\end{proof}
+
+
+
+\end{document}
